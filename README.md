@@ -8,7 +8,9 @@
 # Preparing the Data
 
 `npm run data:fetch` downloads the data from Toronto Open Data 
+
 `npm run data:process` converts it to GeoJSON
+
 `npm run data` does both
 
 # Running the Tool
