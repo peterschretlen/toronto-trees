@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>Toronto Street Tree Data</title>
+<style>
+
+@import url(https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css);
+
+#map {
+  width: 960px;
+  height: 960px;
+}
+
+svg {
+  position: relative;
+}
+
+path {
+  fill: #000;
+  fill-opacity: .2;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+path:hover {
+  fill: brown;
+  fill-opacity: .7;
+}
+
+</style>
+
+<h1>Toronto Street Tree Dataset (1000 record sample)</h1>
+
+<p>Data from <a href="http://www1.toronto.ca/wps/portal/contentonly?vgnextoid=5af95104c26f3310VgnVCM1000003dd60f89RCRD"> Toronto Open Data</a></p>
+
+<p id="map">
+
+<script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+<script src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+<script>
+
+var layer = new L.StamenTileLayer("toner");
+var map = new L.Map("map", {center: [43.65, -79.38], zoom: 11})
+map.addLayer(layer);
+
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+    g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+d3.json("trees_min_1000.json", function(error, collection) {
+  if (error) throw error;
+
+  var transform = d3.geo.transform({point: projectPoint})
+  var path = d3.geo.path().projection(transform);
+
+   // add circles to svg
+   var circles = g.selectAll("circle")
+      .data(collection.features.filter(
+            function(d){ 
+              var valid = d.geometry.coordinates[1] > -90; 
+              return valid;
+            })).enter()
+      .append("circle");
+
+  map.on("viewreset", reset);
+  reset();
+
+  // Reposition the SVG to cover the features.
+  function reset() {
+    var bounds = path.bounds(collection),
+        topLeft = bounds[0],
+        bottomRight = bounds[1];
+
+    svg .attr("width", bottomRight[0] - topLeft[0])
+        .attr("height", bottomRight[1] - topLeft[1])
+        .style("left", topLeft[0] + "px")
+        .style("top", topLeft[1] + "px");
+
+    g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+
+    circles.attr("cx", function (d) { return projectCoord(d.geometry.coordinates).x; })
+      .attr("cy", function (d) { return projectCoord(d.geometry.coordinates).y; })
+      .attr("r", function(d) { return Math.max( 3, d.properties.DBH_TRUNK/10 ); })
+      .attr("fill", "green")
+
+  }
+
+  //coord = [x (lon), y (lat)]
+  function projectCoord(coord){
+    var point = map.latLngToLayerPoint(new L.LatLng(coord[1], coord[0]));
+    return point;
+  }
+
+  // Use Leaflet to implement a D3 geometric transformation.
+  function projectPoint(x, y) {
+
+    //skip points with invalid data
+    if(x < -180 || x > 180 || y > 90 || y < -90) return;
+
+    var point = projectCoord( [x, y] );
+    this.stream.point(point.x, point.y);
+  }
+});
+
+</script>
