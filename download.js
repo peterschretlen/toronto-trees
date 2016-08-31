@@ -22,7 +22,6 @@ function fetch(download_url) {
 		if( err == null || err.code != 'ENOENT') return;
 
 		console.log("downloading", download_url, filepath);
-		var isZip = _.toLower(path.extname(filename)) === ".zip";
 		download(download_url, raw_data_path, ).then( function(){
 			var isZip = _.toLower(path.extname(filename)) === ".zip";
 			if(!isZip) return;
