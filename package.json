@@ -4,15 +4,19 @@
   "description": "process and visualize toronto tree data",
   "main": "index.js",
   "scripts": {
-    "data:fetch" : "node download.js",
+    "data:fetch": "node download.js",
     "data:process": "process_data.js",
-    "data" : "npm run data:fetch && npm run data:process",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "data": "npm run data:fetch && npm run data:process",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -p 8000"
   },
-  "dependencies" : {
-    "download" : "5.0.2",
-    "lodash" :  "4.15.0",
-    "adm-zip" : "0.4.7"
+  "devDependencies": {
+    "http-server": "^0.9.0"
+  },
+  "dependencies": {
+    "download": "5.0.2",
+    "lodash": "4.15.0",
+    "adm-zip": "0.4.7"
   },
   "repository": {
     "type": "git",
