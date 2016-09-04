@@ -16,6 +16,17 @@ var through = require('through2');
 function transformGeoJsonFeature() {
 	var firstFeature = true; 
 	return through.obj(function (feature, encoding, callback) {
+
+		//remove unneeded properties
+		delete feature.properties.TREE_POSIT;
+		delete feature.properties.GEO_ID;
+		delete feature.properties.X;
+		delete feature.properties.Y;
+		delete feature.properties.STRUCTID;
+		delete feature.properties.SUFFIX;
+		delete feature.properties.NAME;
+		delete feature.properties.ADDRESS;
+
 		this.push( (firstFeature ? "" : ",") + JSON.stringify(feature, null, 2) );
 		firstFeature = false;
 		//console.log( JSON.stringify(feature)  );
