@@ -5,7 +5,6 @@ var _ = require('lodash');
 var url = require('url');
 var path = require('path');
 var fs = require('fs');
-var AdmZip = require('adm-zip');
 
 var raw_data_path = './data/raw/';
 var data_url = 'http://www1.toronto.ca/City Of Toronto/Information & Technology/Open Data/Data Sets/Assets/Files/StreetTree_WGS84_April_2016.zip';
@@ -19,15 +18,13 @@ function fetch(download_url) {
 
 	//skip download if file already exists
 	fs.stat(filepath, function(err, stat){
-		if( err == null || err.code != 'ENOENT') return;
+		if( err == null || err.code != 'ENOENT'){
+			console.log(filepath, "exists, skipping download");
+			return;
+		} 
 
 		console.log("downloading", download_url, filepath);
-		download(download_url, raw_data_path, ).then( function(){
-			var isZip = _.toLower(path.extname(filename)) === ".zip";
-			if(!isZip) return;
-			var zip = new AdmZip(filepath);
-			zip.extractAllTo(raw_data_path, true);
-		});
+		download(download_url, raw_data_path );
 	});
 
 };
