@@ -13,9 +13,11 @@ var geojson_end = "]}";
 
 
 var through = require('through2');
-function transformGeoJsonFeature() { 
+function transformGeoJsonFeature() {
+	var firstFeature = true; 
 	return through.obj(function (feature, encoding, callback) {
-		this.push( JSON.stringify(feature)  );
+		this.push( (firstFeature ? "" : ",") + JSON.stringify(feature, null, 2) );
+		firstFeature = false;
 		//console.log( JSON.stringify(feature)  );
 		return callback();
 	});
@@ -45,10 +47,11 @@ fs.stat(tmp_trees_geojson, function(err){
 			function(err){
 				if(err){
 					return console.error('Shapefile to GeoJSON conversion error:', err);
-
 				} else {
-					tmp_geojson.write(geojson_end);
-					console.log("Conversion Complete");
+					fs.appendFile(tmp_trees_geojson,geojson_end, function (err) {
+						if(err)	return console.error('Shapefile to GeoJSON conversion error:', err);
+							console.log("Conversion Complete");
+					});
 				}
 			});
 
