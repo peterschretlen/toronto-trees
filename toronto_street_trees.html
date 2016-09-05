@@ -34,16 +34,33 @@ path:hover {
 
 <p>Data from <a href="http://www1.toronto.ca/wps/portal/contentonly?vgnextoid=5af95104c26f3310VgnVCM1000003dd60f89RCRD"> Toronto Open Data</a></p>
 
+<input type="search" id="address-input" placeholder="Where are we going?" />
+
 <p id="map">
 
 <script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 <script src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
+
 <script>
 
 var layer = new L.StamenTileLayer("toner");
 var map = new L.Map("map", {center: [43.65, -79.38], zoom: 11})
 map.addLayer(layer);
+
+var placesAutocomplete = places({
+    container: document.querySelector('#address-input'),
+    aroundLatLng : '43.65,-79.38',
+    aroundRadius: 200000,
+    countries : ['ca']
+});
+placesAutocomplete.on('change', function(e){
+  console.log(e.suggestion) ;
+  map.setView(new L.LatLng(e.suggestion.latlng.lat, e.suggestion.latlng.lng), 15);
+});
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
